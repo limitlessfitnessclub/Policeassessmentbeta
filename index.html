@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WA Police PPE Assessment</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f3;color:#1a1a1a;padding:24px;}
+.wrap{max-width:720px;margin:0 auto;}
+h1{font-size:20px;font-weight:600;margin-bottom:4px;}
+.sub{font-size:13px;color:#666;margin-bottom:24px;}
+
+.client-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px;}
+.field label{display:block;font-size:11px;color:#888;margin-bottom:4px;font-weight:500;text-transform:uppercase;letter-spacing:.04em;}
+.field input,.field select,.field textarea{width:100%;font-size:13px;padding:7px 10px;border:1px solid #e5e5e0;border-radius:8px;background:#fff;color:#1a1a1a;font-family:inherit;}
+.field textarea{resize:vertical;min-height:64px;}
+
+.section{background:#fff;border:1px solid #e5e5e0;border-radius:12px;padding:16px 20px;margin-bottom:14px;}
+.sec-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid #f0f0ec;}
+.sec-title{font-size:12px;font-weight:600;color:#1a1a1a;}
+.sec-standard{font-size:11px;color:#888;}
+.badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:6px;}
+.badge-pass{background:#e8f5e9;color:#2e7d32;}
+.badge-fail{background:#fdecea;color:#c62828;}
+.badge-warn{background:#fff8e1;color:#e65100;}
+.badge-na{background:#f0f0ec;color:#aaa;}
+
+.row{display:grid;gap:12px;margin-bottom:10px;}
+.row.cols2{grid-template-columns:1fr 1fr;}
+.row.cols3{grid-template-columns:1fr 1fr 1fr;}
+
+.progress-wrap{margin:6px 0 2px;}
+.progress-labels{display:flex;justify-content:space-between;font-size:10px;color:#bbb;margin-bottom:3px;}
+.progress-bg{height:6px;border-radius:3px;background:#f0f0ec;overflow:hidden;}
+.progress-fill{height:100%;border-radius:3px;transition:width .3s;}
+
+.flag-box{border-radius:8px;padding:10px 14px;margin-top:10px;font-size:12px;display:none;}
+.flag-box.fail-flag{background:#fef2f2;border:1px solid #fecaca;color:#991b1b;}
+.flag-box.warn-flag{background:#fffbeb;border:1px solid #fde68a;color:#92400e;}
+
+.summary{background:#fff;border:1px solid #e5e5e0;border-radius:12px;padding:16px 20px;margin-top:6px;display:none;}
+.summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0 16px;}
+.summary-box{border-radius:8px;padding:12px;text-align:center;}
+.summary-box .num{font-size:26px;font-weight:700;}
+.summary-box .lbl{font-size:11px;color:#888;margin-top:2px;}
+.summary-box.green{background:#e8f5e9;}.summary-box.green .num{color:#2e7d32;}
+.summary-box.red{background:#fdecea;}.summary-box.red .num{color:#c62828;}
+.summary-box.amber{background:#fff8e1;}.summary-box.amber .num{color:#e65100;}
+
+.weakness-list{margin-top:4px;}
+.weakness-item{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid #f0f0ec;}
+.weakness-item:last-child{border-bottom:none;}
+.w-tag{font-size:11px;font-weight:600;padding:2px 8px;border-radius:6px;white-space:nowrap;}
+.w-fail{background:#fdecea;color:#c62828;}
+.w-warn{background:#fff8e1;color:#e65100;}
+.w-detail{font-size:13px;color:#1a1a1a;}
+.w-note{font-size:12px;color:#888;margin-top:2px;}
+
+button.assess-btn{font-size:14px;padding:10px 28px;border-radius:8px;border:none;background:#1565c0;color:#fff;cursor:pointer;font-weight:600;margin-top:4px;}
+button.assess-btn:hover{background:#0d47a1;}
+button.print-btn{font-size:13px;padding:8px 20px;border-radius:8px;border:1px solid #e5e5e0;background:#fff;color:#555;cursor:pointer;font-weight:500;margin-top:4px;margin-left:10px;}
+button.print-btn:hover{background:#f5f5f3;}
+
+@media print{
+  body{background:#fff;padding:10px;}
+  button{display:none!important;}
+  .summary{display:block!important;}
+  .section{break-inside:avoid;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>WA Police PPE — Baseline Assessment</h1>
+  <p class="sub">Limitless Fitness Club &nbsp;·&nbsp; Official PPE Fact Sheet (Jan 2025) &nbsp;·&nbsp; Female Recruit Standards</p>
+
+  <div class="section">
+    <div class="sec-header"><div class="sec-title">Client details</div></div>
+    <div class="client-grid">
+      <div class="field"><label>Full name</label><input type="text" id="c-name"></div>
+      <div class="field"><label>Date of birth</label><input type="date" id="c-dob"></div>
+      <div class="field"><label>Assessment date</label><input type="date" id="c-date" value=""></div>
+    </div>
+    <div class="client-grid">
+      <div class="field"><label>Height (cm)</label><input type="number" id="c-height" placeholder="e.g. 168"></div>
+      <div class="field"><label>Weight (kg)</label><input type="number" id="c-weight" placeholder="e.g. 65"></div>
+      <div class="field"><label>Training days / week</label><input type="number" id="c-days" min="0" max="7" placeholder="e.g. 3"></div>
+    </div>
+  </div>
+
+  <!-- 1. Beep Test -->
+  <div class="section" id="sec-bt">
+    <div class="sec-header">
+      <div><div class="sec-title">1 · Beep test</div><div class="sec-standard">Female recruit minimum: level 6.01 &nbsp;·&nbsp; One attempt only</div></div>
+      <div class="badge badge-na" id="badge-bt">Not entered</div>
+    </div>
+    <div class="row cols2">
+      <div class="field">
+        <label>Level reached</label>
+        <input type="number" id="bt-level" min="1" max="13" step="0.1" placeholder="e.g. 5.4" oninput="evalBT()">
+        <div class="progress-wrap">
+          <div class="progress-labels"><span>Level 1</span><span>Level 10</span></div>
+          <div class="progress-bg"><div class="progress-fill" id="bt-bar" style="width:0%;background:#1976d2;"></div></div>
+        </div>
+      </div>
+      <div class="field"><label>Observations (pacing, form, quit reason)</label><textarea id="bt-notes" placeholder="e.g. stopped at level 5.4, poor pacing strategy, faded in last 3 shuttles..."></textarea></div>
+    </div>
+    <div class="flag-box" id="flag-bt"></div>
+  </div>
+
+  <!-- 2. Illinois Agility -->
+  <div class="section" id="sec-ag">
+    <div class="sec-header">
+      <div><div class="sec-title">2 · Modified Illinois agility test</div><div class="sec-standard">Female recruit: ≤22.00 sec &nbsp;·&nbsp; Two attempts</div></div>
+      <div class="badge badge-na" id="badge-ag">Not entered</div>
+    </div>
+    <div class="row cols2">
+      <div class="field">
+        <label>Best time (seconds)</label>
+        <input type="number" id="ag-time" min="15" max="35" step="0.01" placeholder="e.g. 24.50" oninput="evalAG()">
+        <div class="progress-wrap">
+          <div class="progress-labels"><span>28s (slow)</span><span>18s (fast)</span></div>
+          <div class="progress-bg"><div class="progress-fill" id="ag-bar" style="width:0%;background:#388e3c;"></div></div>
+        </div>
+      </div>
+      <div class="field"><label>Observations (footwork, hesitation, cone contact)</label><textarea id="ag-notes" placeholder="e.g. hesitated on direction changes, shuffled instead of crossover, missed cone weave..."></textarea></div>
+    </div>
+    <div class="flag-box" id="flag-ag"></div>
+  </div>
+
+  <!-- 3. Push-ups -->
+  <div class="section" id="sec-pu">
+    <div class="sec-header">
+      <div><div class="sec-title">3 · Push-up test</div><div class="sec-standard">Minimum: 10 full reps &nbsp;·&nbsp; One attempt &nbsp;·&nbsp; No gender split on recruit standard</div></div>
+      <div class="badge badge-na" id="badge-pu">Not entered</div>
+    </div>
+    <div class="row cols2">
+      <div class="field">
+        <label>Reps completed</label>
+        <input type="number" id="pu-reps" min="0" max="60" placeholder="reps" oninput="evalPU()">
+        <div class="progress-wrap">
+          <div class="progress-labels"><span>0</span><span>25+</span></div>
+          <div class="progress-bg"><div class="progress-fill" id="pu-bar" style="width:0%;background:#e65100;"></div></div>
+        </div>
+      </div>
+      <div class="field"><label>Observations (ROM, body position, failure point)</label><textarea id="pu-notes" placeholder="e.g. arms not reaching 90°, hips sagging at rep 6, shoulders collapsing..."></textarea></div>
+    </div>
+    <div class="flag-box" id="flag-pu"></div>
+  </div>
+
+  <!-- 4. Sit-up -->
+  <div class="section" id="sec-su">
+    <div class="sec-header">
+      <div><div class="sec-title">4 · Sit-up test</div><div class="sec-standard">Minimum: 1 correct rep &nbsp;·&nbsp; Three attempts &nbsp;·&nbsp; Elbows to knees, feet grounded</div></div>
+      <div class="badge badge-na" id="badge-su">Not entered</div>
+    </div>
+    <div class="row cols2">
+      <div class="field">
+        <label>Observed result</label>
+        <select id="su-result" onchange="evalSU()">
+          <option value="">Select</option>
+          <option value="pass">Pass — correct technique</option>
+          <option value="fail">Fail — could not complete</option>
+        </select>
+      </div>
+      <div class="field"><label>Observations</label><textarea id="su-notes" placeholder="e.g. feet lifting, elbows not reaching knees, lower back issue..."></textarea></div>
+    </div>
+    <div class="flag-box" id="flag-su"></div>
+  </div>
+
+  <!-- 5. Grip Strength -->
+  <div class="section" id="sec-gr">
+    <div class="sec-header">
+      <div><div class="sec-title">5 · Grip strength</div><div class="sec-standard">Minimum: 30kg both hands &nbsp;·&nbsp; Dynamometer &nbsp;·&nbsp; Two attempts each side</div></div>
+      <div class="badge badge-na" id="badge-gr">Not entered</div>
+    </div>
+    <div class="row cols3">
+      <div class="field">
+        <label>Dominant hand (kg)</label>
+        <input type="number" id="gr-dom" min="5" max="80" step="0.5" placeholder="kg" oninput="evalGrip()">
+        <div class="progress-wrap">
+          <div class="progress-labels"><span>10kg</span><span>50kg</span></div>
+          <div class="progress-bg"><div class="progress-fill" id="gr-dom-bar" style="width:0%;background:#7b1fa2;"></div></div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Non-dominant hand (kg)</label>
+        <input type="number" id="gr-nd" min="5" max="80" step="0.5" placeholder="kg" oninput="evalGrip()">
+        <div class="progress-wrap">
+          <div class="progress-labels"><span>10kg</span><span>50kg</span></div>
+          <div class="progress-bg"><div class="progress-fill" id="gr-nd-bar" style="width:0%;background:#7b1fa2;"></div></div>
+        </div>
+      </div>
+      <div class="field"><label>Observations</label><textarea id="gr-notes" placeholder="e.g. dominant 28kg, non-dominant 24kg, hand fatigue noted..."></textarea></div>
+    </div>
+    <div class="flag-box" id="flag-gr"></div>
+  </div>
+
+  <!-- 6. Bag Lift -->
+  <div class="section" id="sec-bl">
+    <div class="sec-header">
+      <div><div class="sec-title">6 · Bag lift & carry (35kg / 20m)</div><div class="sec-standard">Place on 70cm table &nbsp;·&nbsp; Hip carry &nbsp;·&nbsp; No dropping &nbsp;·&nbsp; Two attempts</div></div>
+      <div class="badge badge-na" id="badge-bl">Not entered</div>
+    </div>
+    <div class="row cols2">
+      <div class="field">
+        <label>Observed result</label>
+        <select id="bl-result" onchange="evalBL()">
+          <option value="">Select</option>
+          <option value="pass">Pass — correct technique</option>
+          <option value="close">Pass — technique issues noted</option>
+          <option value="fail">Fail — could not complete</option>
+        </select>
+      </div>
+      <div class="field"><label>Observations (lift technique, carry position, table placement)</label><textarea id="bl-notes" placeholder="e.g. rounded lower back on lift, bag dropped below hip height, struggled to place on table..."></textarea></div>
+    </div>
+    <div class="flag-box" id="flag-bl"></div>
+  </div>
+
+  <!-- Coach notes -->
+  <div class="section">
+    <div class="sec-header"><div class="sec-title">Coach notes</div></div>
+    <div class="field"><textarea id="coach-notes" style="min-height:80px;" placeholder="General observations, attitude, coachability, anything relevant before programming..."></textarea></div>
+  </div>
+
+  <div>
+    <button class="assess-btn" onclick="generateSummary()">Generate summary</button>
+    <button class="print-btn" onclick="window.print()">Print / save PDF</button>
+  </div>
+
+  <div class="summary" id="summary">
+    <div style="font-size:14px;font-weight:600;margin-bottom:4px;">Assessment summary</div>
+    <div style="font-size:12px;color:#888;" id="summary-date"></div>
+    <div class="summary-grid">
+      <div class="summary-box green"><div class="num" id="s-pass">—</div><div class="lbl">Passing</div></div>
+      <div class="summary-box red"><div class="num" id="s-fail">—</div><div class="lbl">Failing</div></div>
+      <div class="summary-box amber"><div class="num" id="s-warn">—</div><div class="lbl">Borderline</div></div>
+    </div>
+    <div style="font-size:13px;font-weight:600;margin-bottom:8px;">Priority areas</div>
+    <div class="weakness-list" id="weakness-list"></div>
+  </div>
+</div>
+
+<script>
+function clamp(v,mn,mx){return Math.min(mx,Math.max(mn,v));}
+
+function evalBT(){
+  var v=parseFloat(document.getElementById('bt-level').value);
+  var badge=document.getElementById('badge-bt');
+  var bar=document.getElementById('bt-bar');
+  var flag=document.getElementById('flag-bt');
+  if(isNaN(v)){badge.className='badge badge-na';badge.textContent='Not entered';bar.style.width='0%';flag.style.display='none';return;}
+  bar.style.width=clamp((v-1)/12*100,0,100)+'%';
+  if(v>=7){badge.className='badge badge-pass';badge.textContent='Pass ('+v.toFixed(1)+')';flag.style.display='none';}
+  else if(v>=6.01){badge.className='badge badge-warn';badge.textContent='Borderline ('+v.toFixed(1)+')';flag.className='flag-box warn-flag';flag.textContent='Meets minimum but no buffer. Target level 7+ before testing.';flag.style.display='block';}
+  else{badge.className='badge badge-fail';badge.textContent='Fail ('+v.toFixed(1)+')';flag.className='flag-box fail-flag';flag.textContent='Below minimum of 6.01. Gap: '+(6.01-v).toFixed(2)+' levels. Primary training focus required.';flag.style.display='block';}
+}
+function evalAG(){
+  var v=parseFloat(document.getElementById('ag-time').value);
+  var badge=document.getElementById('badge-ag');
+  var bar=document.getElementById('ag-bar');
+  var flag=document.getElementById('flag-ag');
+  if(isNaN(v)){badge.className='badge badge-na';badge.textContent='Not entered';bar.style.width='0%';flag.style.display='none';return;}
+  bar.style.width=clamp((28-v)/10*100,0,100)+'%';
+  if(v<=20.5){badge.className='badge badge-pass';badge.textContent='Pass ('+v.toFixed(2)+'s)';flag.style.display='none';}
+  else if(v<=22){badge.className='badge badge-warn';badge.textContent='Borderline ('+v.toFixed(2)+'s)';flag.className='flag-box warn-flag';flag.textContent='Meets minimum but tight. Aim for sub 20.5s to build a buffer. Focus: direction change speed and footwork.';flag.style.display='block';}
+  else{badge.className='badge badge-fail';badge.textContent='Fail ('+v.toFixed(2)+'s)';flag.className='flag-box fail-flag';flag.textContent='Above 22.00s cut-off. Gap: '+(v-22).toFixed(2)+'s. Focus: change of direction mechanics, acceleration, and agility drills.';flag.style.display='block';}
+}
+function evalPU(){
+  var v=parseInt(document.getElementById('pu-reps').value);
+  var badge=document.getElementById('badge-pu');
+  var bar=document.getElementById('pu-bar');
+  var flag=document.getElementById('flag-pu');
+  if(isNaN(v)){badge.className='badge badge-na';badge.textContent='Not entered';bar.style.width='0%';flag.style.display='none';return;}
+  bar.style.width=clamp(v/25*100,0,100)+'%';
+  if(v>=15){badge.className='badge badge-pass';badge.textContent='Pass ('+v+' reps)';flag.style.display='none';}
+  else if(v>=10){badge.className='badge badge-warn';badge.textContent='Borderline ('+v+' reps)';flag.className='flag-box warn-flag';flag.textContent='Meets minimum of 10 but limited buffer. Aim for 15+ reps before testing. Focus: upper body pressing strength and endurance.';flag.style.display='block';}
+  else{badge.className='badge badge-fail';badge.textContent='Fail ('+v+' reps)';flag.className='flag-box fail-flag';flag.textContent=(10-v)+' reps below minimum of 10. Focus: chest, shoulder and tricep strength, push-up progression program.';flag.style.display='block';}
+}
+function evalSU(){
+  var v=document.getElementById('su-result').value;
+  var badge=document.getElementById('badge-su');
+  var flag=document.getElementById('flag-su');
+  if(v==='pass'){badge.className='badge badge-pass';badge.textContent='Pass';flag.style.display='none';}
+  else if(v==='fail'){badge.className='badge badge-fail';badge.textContent='Fail';flag.className='flag-box fail-flag';flag.textContent='Could not complete 1 correct sit-up. Focus: core strength, hip flexor activation, and proper technique. Note: if injury present, assess and refer before loading.';flag.style.display='block';}
+  else{badge.className='badge badge-na';badge.textContent='Not entered';flag.style.display='none';}
+}
+function evalGrip(){
+  var d=parseFloat(document.getElementById('gr-dom').value);
+  var nd=parseFloat(document.getElementById('gr-nd').value);
+  var badge=document.getElementById('badge-gr');
+  var flag=document.getElementById('flag-gr');
+  if(!isNaN(d)){document.getElementById('gr-dom-bar').style.width=clamp((d-10)/40*100,0,100)+'%';}
+  if(!isNaN(nd)){document.getElementById('gr-nd-bar').style.width=clamp((nd-10)/40*100,0,100)+'%';}
+  if(isNaN(d)&&isNaN(nd)){badge.className='badge badge-na';badge.textContent='Not entered';flag.style.display='none';return;}
+  var domFail=!isNaN(d)&&d<30;
+  var ndFail=!isNaN(nd)&&nd<30;
+  var domWarn=!isNaN(d)&&d>=30&&d<35;
+  var ndWarn=!isNaN(nd)&&nd>=30&&nd<35;
+  if(domFail||ndFail){
+    badge.className='badge badge-fail';badge.textContent='Fail';
+    var msg='Below 30kg minimum: ';
+    var parts=[];
+    if(domFail)parts.push('dominant '+d.toFixed(0)+'kg (gap: '+(30-d).toFixed(0)+'kg)');
+    if(ndFail)parts.push('non-dominant '+nd.toFixed(0)+'kg (gap: '+(30-nd).toFixed(0)+'kg)');
+    flag.className='flag-box fail-flag';flag.textContent=msg+parts.join(', ')+'. Focus: daily grip work, farmers carries, dead hangs.';flag.style.display='block';
+  } else if(domWarn||ndWarn){
+    badge.className='badge badge-warn';badge.textContent='Borderline';
+    flag.className='flag-box warn-flag';flag.textContent='Meets minimum but limited buffer. Aim for 35kg+ both hands before testing.';flag.style.display='block';
+  } else {
+    badge.className='badge badge-pass';badge.textContent='Pass';flag.style.display='none';
+  }
+}
+function evalBL(){
+  var v=document.getElementById('bl-result').value;
+  var badge=document.getElementById('badge-bl');
+  var flag=document.getElementById('flag-bl');
+  if(v==='pass'){badge.className='badge badge-pass';badge.textContent='Pass';flag.style.display='none';}
+  else if(v==='close'){badge.className='badge badge-warn';badge.textContent='Technique issues';flag.className='flag-box warn-flag';flag.textContent='Completed but technique needs work before testing. Focus: hip hinge pattern, bracing, carry position, and controlled placement.';flag.style.display='block';}
+  else if(v==='fail'){badge.className='badge badge-fail';badge.textContent='Fail';flag.className='flag-box fail-flag';flag.textContent='Could not complete 35kg lift and carry. Focus: posterior chain strength (deadlift, hip thrust, RDL), loaded carries, and technique coaching.';flag.style.display='block';}
+  else{badge.className='badge badge-na';badge.textContent='Not entered';flag.style.display='none';}
+}
+
+function generateSummary(){
+  var items=[];
+
+  var bt=parseFloat(document.getElementById('bt-level').value);
+  if(!isNaN(bt)){
+    if(bt<6.01)items.push({tag:'Fail',cls:'w-fail',name:'Beep test',detail:'Level '+bt.toFixed(1)+' — below 6.01 minimum. Gap: '+(6.01-bt).toFixed(2)+' levels.',priority:1});
+    else if(bt<7)items.push({tag:'Borderline',cls:'w-warn',name:'Beep test',detail:'Level '+bt.toFixed(1)+' — passes minimum but no buffer. Aim for level 7+ before testing.',priority:2});
+  }
+
+  var ag=parseFloat(document.getElementById('ag-time').value);
+  if(!isNaN(ag)){
+    if(ag>22)items.push({tag:'Fail',cls:'w-fail',name:'Illinois agility',detail:ag.toFixed(2)+'s — above 22.00s cut-off. Gap: '+(ag-22).toFixed(2)+'s. Direction change mechanics and acceleration.',priority:1});
+    else if(ag>20.5)items.push({tag:'Borderline',cls:'w-warn',name:'Illinois agility',detail:ag.toFixed(2)+'s — passes but limited buffer. Aim for sub 20.5s.',priority:2});
+  }
+
+  var pu=parseInt(document.getElementById('pu-reps').value);
+  if(!isNaN(pu)){
+    if(pu<10)items.push({tag:'Fail',cls:'w-fail',name:'Push-ups',detail:pu+' reps — '+(10-pu)+' below minimum of 10. Upper body pressing strength and endurance.',priority:1});
+    else if(pu<15)items.push({tag:'Borderline',cls:'w-warn',name:'Push-ups',detail:pu+' reps — passes but limited buffer. Aim for 15+ reps before testing.',priority:2});
+  }
+
+  var su=document.getElementById('su-result').value;
+  if(su==='fail')items.push({tag:'Fail',cls:'w-fail',name:'Sit-up',detail:'Could not complete 1 correct rep. Core strength and technique focus required.',priority:1});
+
+  var d=parseFloat(document.getElementById('gr-dom').value);
+  var nd=parseFloat(document.getElementById('gr-nd').value);
+  if(!isNaN(d)||!isNaN(nd)){
+    var parts=[];
+    if(!isNaN(d)&&d<30)parts.push('dominant '+d.toFixed(0)+'kg');
+    if(!isNaN(nd)&&nd<30)parts.push('non-dominant '+nd.toFixed(0)+'kg');
+    var dWarn=!isNaN(d)&&d>=30&&d<35;
+    var ndWarn=!isNaN(nd)&&nd>=30&&nd<35;
+    if(parts.length>0)items.push({tag:'Fail',cls:'w-fail',name:'Grip strength',detail:'Below 30kg minimum — '+parts.join(', ')+'. Daily grip work, farmers carries, dead hangs.',priority:1});
+    else if(dWarn||ndWarn)items.push({tag:'Borderline',cls:'w-warn',name:'Grip strength',detail:'Meets minimum but buffer is narrow. Aim for 35kg+ both hands.',priority:2});
+  }
+
+  var bl=document.getElementById('bl-result').value;
+  if(bl==='fail')items.push({tag:'Fail',cls:'w-fail',name:'Bag lift & carry',detail:'Could not complete. Posterior chain strength (deadlift, hip thrust, RDL) and technique coaching.',priority:1});
+  else if(bl==='close')items.push({tag:'Technique',cls:'w-warn',name:'Bag lift & carry',detail:'Completed with form issues. Hip hinge, bracing, carry position and placement need work before testing.',priority:2});
+
+  items.sort(function(a,b){return a.priority-b.priority;});
+
+  var passing=0,failing=0,borderline=0;
+  var allBadges=['badge-bt','badge-ag','badge-pu','badge-su','badge-gr','badge-bl'];
+  allBadges.forEach(function(id){
+    var el=document.getElementById(id);
+    if(!el)return;
+    if(el.className.indexOf('badge-pass')>-1)passing++;
+    else if(el.className.indexOf('badge-fail')>-1)failing++;
+    else if(el.className.indexOf('badge-warn')>-1)borderline++;
+  });
+
+  document.getElementById('s-pass').textContent=passing;
+  document.getElementById('s-fail').textContent=failing;
+  document.getElementById('s-warn').textContent=borderline;
+
+  var name=document.getElementById('c-name').value||'Client';
+  var date=document.getElementById('c-date').value;
+  document.getElementById('summary-date').textContent=name+(date?' · '+date:'');
+
+  var wl='';
+  if(items.length===0){
+    wl='<div style="font-size:13px;color:#2e7d32;padding:10px 0;">All entered components meeting standard. No priority weaknesses identified.</div>';
+  } else {
+    items.forEach(function(item){
+      wl+='<div class="weakness-item">'
+        +'<div class="w-tag '+item.cls+'">'+item.tag+'</div>'
+        +'<div><div class="w-detail">'+item.name+'</div><div class="w-note">'+item.detail+'</div></div>'
+        +'</div>';
+    });
+  }
+  document.getElementById('weakness-list').innerHTML=wl;
+  document.getElementById('summary').style.display='block';
+  document.getElementById('summary').scrollIntoView({behavior:'smooth',block:'start'});
+}
+</script>
+</body>
+</html>
